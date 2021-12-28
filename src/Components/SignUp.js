@@ -1,4 +1,4 @@
-import React from "react";
+import React,{useEffect} from "react";
 import { Form, Button } from "react-bootstrap";
 import { useState } from "react";
 function SignUp(props) {
@@ -9,74 +9,76 @@ function SignUp(props) {
     confirmpassword: "",
   });
 
-  const [validation, setvalidation] = useState(false);
+  const [formErrors, setFormErrors] = useState({});
+
   const { username, email, password, confirmpassword } = state;
+  const { errusername, erremail, errpassword, errconfirmpassword } = formErrors;
   const handleChange = (e) => {
     const { name, value } = e.target;
     const addusers = { ...state, [name]: value };
     setstate(addusers);
+    setFormErrors({})
   };
-  const validationdata = () => {
-    if (!username.trim() || !password.trim() || !confirmpassword.trim()) {
-      alert("Fields Can't be Empty");
-      setvalidation(!validation)
-      console.log(validation)
+ 
+  
+  const validate = () => {
+    let val=true
+    const errors={}
+    const regex = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/i;
+    if (!username) {
+      errors.errusername = "Name is required !";
+      val=false
+     
+    } else if (username.length < 3) {
+      errors.errusername = "Length should be greater than 3 !";
+      val=false
     }
-    if (password.length < 8 || confirmpassword.length < 8) {
-      alert("Password should be greater than 8");
-      setvalidation(!validation)
+    else if(!username.match(/^[A-Za-z]+$/) ){
+      errors.errusername = "Only alphabets are allowed !";
+      val=false
+    }
+    if (!email) {
+      errors.erremail = "Email is required!";
+      val=false
+    } else if (!regex.test(email)) {
+      errors.erremail = "This is not a valid email format!";
+      val=false
+    }
+    if (!password) {
+      errors.errpassword = "Password is required!";
+      val=false
+    } else if (password.length < 8) {
+      errors.errpassword = "Password must be more than 8 characters !";
+      val=false
+    } else if (password.search(/[a-z]/i) < 0) {
+      errors.errpassword = "Password contain atleast 1 character !";
+      val=false
+    } else if (password.search(/[0-9]/) < 0) {
+      errors.errpassword = "Password contain atleast 1 digit !";
+      val=false
     }
     if (password != confirmpassword) {
-      alert("Password does't match");
-      setvalidation(!validation)
+      errors.errconfirmpassword = "Password does't match !";
+      val=false
     }
-    if (password.search(/[a-z]/i) < 0) {
-      alert("Your password must contain at least one letter.");
-      setvalidation(!validation)
-    }
-    if (password.search(/[0-9]/) < 0) {
-      alert("Your password must contain at least one digit.");
-      setvalidation(!validation)
-    }
- 
+    setFormErrors(errors);
+    return val;
   };
   const handleSubmit = (e) => {
     e.preventDefault();
-    /*if (!username.trim() || !password.trim() || !confirmpassword.trim()) {
-      alert("Fields Can't be Empty");
-      setvalidation(false);
-    }
-    if (password.length < 8 || confirmpassword.length < 8) {
-      alert("Password should be greater than 8");
-      setvalidation(false);
-    }
-    if (password != confirmpassword) {
-      alert("Password does't match");
-      setvalidation(false);
-    }
-    if (password.search(/[a-z]/i) < 0) {
-      alert("Your password must contain at least one letter.");
-      setvalidation(false);
-    }
-    if (password.search(/[0-9]/) < 0) {
-      alert("Your password must contain at least one digit.");
-      setvalidation(false);
-    }*/
-   if (username.trim() || password.trim() || confirmpassword.trim()) {
+    let isvalid=validate()
+    if (isvalid) {
       let getdata = localStorage.getItem("userdata") || "[]";
       let parsedata = JSON.parse(getdata);
-      const t = parsedata.find((data) => data.email == email);
-      if (!t) {
+      const getuser = parsedata.find((data) => data.email == email);
+      if (!getuser) {
         parsedata.push(state);
         localStorage.setItem("userdata", JSON.stringify(parsedata));
         props.history.push("/");
       } else {
-        alert("User already exist");
+        alert("This Email already exist");
       }
     }
-  else{
-      alert("please fill all fields")
-  }
   };
   return (
     <div className="container">
@@ -90,6 +92,7 @@ function SignUp(props) {
             placeholder="Enter your Name"
             onChange={(event) => handleChange(event)}
           />
+          <span className='text-danger'>{errusername}</span>
         </Form.Group>
         <Form.Group className="mb-3" controlId="formBasicEmail">
           <Form.Label>Email</Form.Label>
@@ -100,6 +103,7 @@ function SignUp(props) {
             placeholder="Enter Your Email"
             onChange={(event) => handleChange(event)}
           />
+          <span className='text-danger'>{erremail}</span>
         </Form.Group>
         <Form.Group className="mb-3" controlId="formBasicPassword">
           <Form.Label>Password</Form.Label>
@@ -110,6 +114,7 @@ function SignUp(props) {
             placeholder="Password"
             onChange={(event) => handleChange(event)}
           />
+          <span className='text-danger'>{errpassword}</span>
         </Form.Group>
         <Form.Group className="mb-3" controlId="formBasicPassword">
           <Form.Label>Confirm Password</Form.Label>
@@ -120,6 +125,7 @@ function SignUp(props) {
             placeholder="Confirm Password"
             onChange={(event) => handleChange(event)}
           />
+          <span className='text-danger'>{errconfirmpassword}</span>
         </Form.Group>
         <Button variant="primary" type="submit">
           Submit

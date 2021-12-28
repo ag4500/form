@@ -1,10 +1,9 @@
 import Form from "react-bootstrap/Form";
 import { Button } from "react-bootstrap";
 import { useState } from "react";
-import { useSelector ,useDispatch} from "react-redux";
+import { useDispatch} from "react-redux";
 import { setShow } from "../actions";
 const LogIn = (props) => {
-    const show=useSelector((state)=>state.toggle.show)
     const dispatch=useDispatch()
   const [state, setstate] = useState({
     email: "",
@@ -23,12 +22,14 @@ const LogIn = (props) => {
     let getdata = localStorage.getItem("userdata") || "[]";
     let parsedata = JSON.parse(getdata);
     const a = parsedata.findIndex((i) => i.email == email && i.password == password);
+    const b=parsedata.find((data,index)=>a==index);
+    console.log(b)
     if(a!=-1){
-        dispatch(setShow(!show))
-        props.history.push(`/dashboard/${a}`)
+        dispatch(setShow(true))
+        props.history.push(`/dashboard/${a}/${b.username}`)
     }
     else{
-        return alert("Please Enter Valid Credentials");
+         alert("Please Enter Valid Credentials");
     }
   };
   return (

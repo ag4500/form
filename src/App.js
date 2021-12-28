@@ -5,10 +5,12 @@ import { useSelector } from "react-redux";
 import { Navbar, Nav } from "react-bootstrap";
 import { Link } from "react-router-dom";
 import "../node_modules/bootstrap/dist/css/bootstrap.min.css";
+import ProtectedRouting from "./ProtectedRouting";
+
 import SignUp from "./Components/SignUp";
 function App() {
   const showhide = useSelector((state) => state.toggle.show);
-
+  console.log(showhide);
   return (
     <Router>
       <div className="App">
@@ -48,14 +50,11 @@ function App() {
         </Navbar>
       </div>
       <Switch>
-        {showhide == false ? (
-          <>
-            <Route exact path="/" component={LogIn} />
-            <Route exact path="/registration" component={SignUp} />
-          </>
-        ) : (
-          <Route exact path="/dashboard/:id/" component={DashBoard} />
-        )}
+        <Route exact path="/" component={LogIn} />
+        <Route exact path="/registration" component={SignUp} />
+        <Route exact path="/dashboard/:id/:name">
+          <ProtectedRouting component={DashBoard} islogin={showhide} />
+        </Route>
       </Switch>
     </Router>
   );

@@ -3,7 +3,7 @@ import { useDispatch } from "react-redux";
 import { Button } from "react-bootstrap";
 import { setShow } from "../actions";
 export default function DashBoard(props) {
-  
+  const name=props.match.params.name
   const dispatch = useDispatch();
   const handleLogout = () => {
     dispatch(setShow(false));
@@ -24,7 +24,7 @@ export default function DashBoard(props) {
   };
   return (
     <>
-    <h3 className="text-center my-1">Welcome!!!!!!</h3>
+    <h3 className="text-center my-1">Welcome {name}!!!!!!</h3>
       <div
         className="container "
         style={{ marginTop: "50px", marginLeft: "500px" }}
